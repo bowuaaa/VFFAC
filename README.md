@@ -1,6 +1,6 @@
 ## Learning Effective Value Function Factorization via Attentional Communication
 
-This repository is an implementation of **Learning Effective Value Function Factorization via Attentional Communication**. The implementation is based on [PyMARL](https://github.com/oxwhirl/pymarl) and [SMAC](https://github.com/oxwhirl/smac). 
+This repository is an implementation of **"Learning Effective Value Function Factorization via Attentional Communication"**. The implementation is based on [PyMARL](https://github.com/oxwhirl/pymarl) and [SMAC](https://github.com/oxwhirl/smac). 
 
 #### Setup
 
