@@ -4,6 +4,7 @@ import torch as th
 
 import logging
 
+
 # This multi-agent controller shares parameters between agents
 class VffacMAC:
     def __init__(self, scheme, groups, args):
@@ -22,7 +23,8 @@ class VffacMAC:
         avail_actions = ep_batch["avail_actions"][:, t_ep]
         agent_outputs = self.forward(ep_batch, t_ep, test_mode=test_mode)
         # logging.debug(agent_outputs)
-        chosen_actions = self.action_selector.select_action(agent_outputs[bs], avail_actions[bs], t_env, test_mode=test_mode)
+        chosen_actions = self.action_selector.select_action(agent_outputs[bs], avail_actions[bs], t_env,
+                                                            test_mode=test_mode)
         return chosen_actions
 
     def forward(self, ep_batch, t, test_mode=False, counterfactual=False):
@@ -34,7 +36,8 @@ class VffacMAC:
             q_without_comm = self.agent.q_without_communication(self.hidden_states)
 
         agents_key, agents_value, agents_query = self.agent.communicate(self.hidden_states)
-        agents_out = self.agent.aggregate(agents_query, agents_key, agents_value, self.hidden_states)  # [batch_size, n_agents, n_actions]
+        agents_out = self.agent.aggregate(agents_query, agents_key, agents_value,
+                                          self.hidden_states)  # [batch_size, n_agents, n_actions]
         return (agents_out, q_without_comm) if counterfactual else agents_out
 
     def init_hidden(self, batch_size):
@@ -68,11 +71,11 @@ class VffacMAC:
             if t == 0:
                 inputs.append(th.zeros_like(batch["actions_onehot"][:, t]))
             else:
-                inputs.append(batch["actions_onehot"][:, t-1])
+                inputs.append(batch["actions_onehot"][:, t - 1])
         if self.args.obs_agent_id:
             inputs.append(th.eye(self.n_agents, device=batch.device).unsqueeze(0).expand(bs, -1, -1))
 
-        inputs = th.cat([x.reshape(bs*self.n_agents, -1) for x in inputs], dim=1)
+        inputs = th.cat([x.reshape(bs * self.n_agents, -1) for x in inputs], dim=1)
         return inputs
 
     def _get_input_shape(self, scheme):
