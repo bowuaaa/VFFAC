@@ -19,7 +19,7 @@ pip install -r requirements.txt
 #### Run an experiment
 
 ```shell
-python src/main.py --config=vffac --env-config=sc2 --map=6h_vs_8z  
+python src/main.py --config=vffac --env-config=sc2 with env_args.map_name=6h_vs_8z
 ```
 
 All results will be stored in the `Results` folder.

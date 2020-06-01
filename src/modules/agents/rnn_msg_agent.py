@@ -23,8 +23,11 @@ class RnnMsgAgent(nn.Module):
         self.fc_query = nn.Linear(args.rnn_hidden_dim, args.n_query)
 
         self.fc_attn = nn.Linear(args.n_query + args.n_key * args.n_agents, args.n_agents)
-        # self.fc_attn_combine = nn.Linear(args.n_value + args.rnn_hidden_dim, args.rnn_hidden_dim)
-        self.fc_attn_combine = nn.Linear(args.n_value, args.rnn_hidden_dim)
+
+        self.fc_attn_combine = nn.Linear(args.n_value + args.rnn_hidden_dim, args.rnn_hidden_dim)
+
+        # used when ablate 'shortcut' connection
+        # self.fc_attn_combine = nn.Linear(args.n_value, args.rnn_hidden_dim)
 
     def forward(self, x, hidden):
         """
@@ -67,16 +70,15 @@ class RnnMsgAgent(nn.Module):
 
         # attentional value
         attn_applied = torch.bmm(attn_weights, value)  # [batch_size, n_agents, n_value]
-        
-        # combine with agent's own hidden
-        # attn_combined = torch.cat([attn_applied, hidden], dim=-1)
-        
-        # don't add agent's own hidden
-        attn_combined = attn_applied
-        
-        
+
+        # shortcut connection: combine with agent's own hidden
+        attn_combined = torch.cat([attn_applied, hidden], dim=-1)
+
+        # used when ablate 'shortcut' connection
+        # attn_combined = attn_applied
+
         attn_combined = F.relu(self.fc_attn_combine(attn_combined))
-        
+
         # mlp, output Q
         q = self.fc2(attn_combined)  # [batch_size, n_agents, n_actions]
         return q
